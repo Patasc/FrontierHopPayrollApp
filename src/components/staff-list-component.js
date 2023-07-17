@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import {getAllStorage, getEmployee, setItem} from './Utils/StaticFunctions';
+import {getAllStorage, setItem} from './Utils/StaticFunctions';
 
 export default class StaffListComponent extends Component{
     constructor(props) {
