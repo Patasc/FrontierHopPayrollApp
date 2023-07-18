@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import {getAllStorage, setItem, getEmployee, removeEmployee} from './Utils/StaticFunctions';
+import {getAmountOfIntervalsPassed, getAmountOwed, getLatestPayout, getNextPayTime, payWorker} from './Utils/PayCalculators';
 
 export default class PayoutComponent extends Component {
     constructor(props) {
@@ -11,20 +12,10 @@ export default class PayoutComponent extends Component {
         })
     }
 
-    payWorker(e, id){
-        e.preventDefault();
-
-        setItem("employees", id, "nextpay_time", this.getNextPayTime(getEmployee(id)));
-
-        let worker = getEmployee(id);
-
-        setItem("employees", id, "total_pay", parseInt(worker.pay_amount) + parseInt(worker.total_pay));
-    }
-
     skipPayWorker(e, id){
         e.preventDefault();
 
-        setItem("employees", id, "nextpay_time", this.getNextPayTime(getEmployee(id)));
+        setItem("employees", id, "nextpay_time", getNextPayTime(getEmployee(id)));
     }
 
     fireWorker(e, id){
@@ -32,14 +23,9 @@ export default class PayoutComponent extends Component {
         removeEmployee(id);
     }
 
-    getNextPayTime(workerData){
-        let nextpay_time = new Date(workerData.nextpay_time)
-        return new Date(nextpay_time.getTime() + workerData.pay_interval * 60000);
-    }
-
     getSortedByNextPayout(){
         let temp = getAllStorage("employees");
-        return temp.sort((a, b) => (this.getNextPayTime(a) > this.getNextPayTime(b) ? 1 : -1)).slice(0, 7);
+        return temp.sort((a, b) => (getNextPayTime(a) > getNextPayTime(b) ? 1 : -1)).slice(0, 6);
     }
 
     getFormattedTime(timeObject){
@@ -54,11 +40,11 @@ export default class PayoutComponent extends Component {
     }
 
     needsToBePaid(worker){
-        return new Date() > this.getNextPayTime(worker)
+        return new Date() > getNextPayTime(worker)
     }
 
     needsToBePaidSoon(worker){
-        return (new Date((new Date()).getTime() + 10 * 60000)) > this.getNextPayTime(worker);
+        return (new Date((new Date()).getTime() + 10 * 60000)) > getNextPayTime(worker);
     }
 
     componentDidMount() {
@@ -84,26 +70,24 @@ export default class PayoutComponent extends Component {
             <div>
                 <table>
                     <tr>
-                        <th>First Name</th>
-                        <th>Last Name</th>
+                        <th>Name</th>
                         <th>Title</th>
-                        <th>Salary</th>
-                        <th>Paytime</th>
+                        <th>Amount Owed</th>
+                        <th>Time worked</th>
+                        <th>Most recent Due Paytime</th>
                         <th>Pay worker</th>
                         <th>Skip pay</th>
-                        <th>Fire</th>
                     </tr>
                     {this.getSortedByNextPayout().map((item) => {
                         return (
                                 <tr style={{color: this.getPayoutColour(item)}}>
-                                    <td className="table_firstname">{item.firstname}</td>
-                                    <td className="table_lastname">{item.lastname}</td>
+                                    <td className="table_firstname">{item.name}</td>
                                     <td className="table_title">{item.title}</td>
-                                    <td className="table_pay_amount">{item.pay_amount}</td>
-                                    <td className="table_next_pay">{this.getFormattedTime(this.getNextPayTime(item))}</td>
-                                    <td className="give_pay"><form onSubmit={event => this.payWorker(event, item.id)}><button type="submit" className="btn btn-primary btn-block">Pay Worker</button></form></td>
+                                    <td className="table_pay_amount">{getAmountOwed(item)}</td>
+                                    <td className="table_pay_amount">{getAmountOfIntervalsPassed(item) * parseInt(item.pay_interval)}</td>
+                                    <td className="table_next_pay">{this.getFormattedTime(getLatestPayout(item))}</td>
+                                    <td className="give_pay"><form onSubmit={event => payWorker(event, item.id)}><button type="submit" className="btn btn-primary btn-block">Pay Worker</button></form></td>
                                     <td className="skip_pay"><form onSubmit={event => this.skipPayWorker(event, item.id)}><button type="submit" className="btn btn-primary btn-block">Skip Pay</button></form></td>
-                                    <td className="fire_pay"><form onSubmit={event => this.fireWorker(event, item.id)}><button type="submit" className="btn btn-primary btn-block">Fire</button></form></td>
                                 </tr>
                     )})}
                 </table>

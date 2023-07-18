@@ -8,12 +8,8 @@
 
 table {
   width: 100%;
-  table-layout: fixed;
+  table-layout: auto;
   align-content: center;
-}
-
-.w{
-  width: 8%;
 }
 
 td {

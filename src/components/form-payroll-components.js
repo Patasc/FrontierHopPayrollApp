@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 export default class FormDataComponent extends Component {
     constructor(props) {
         super(props);
-        this.onChangeFirstName = this.onChangeFirstName.bind(this);
-        this.onChangeLastName = this.onChangeLastName.bind(this);
+        this.onChangeName = this.onChangeName.bind(this);
         this.onChangeTitle = this.onChangeTitle.bind(this);
         this.onChangePay = this.onChangePay.bind(this);
         this.onChangeInterval = this.onChangeInterval.bind(this);
@@ -11,8 +10,7 @@ export default class FormDataComponent extends Component {
         this.onChangeStartTime = this.onChangeStartTime.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.state = {
-            firstname: '',
-            lastname: '',
+            name: '',
             title: '',
             pay_amount: '',
             pay_interval: 60,
@@ -24,12 +22,10 @@ export default class FormDataComponent extends Component {
         }
     }
 
-    onChangeFirstName(e) {
-        this.setState({ firstname: e.target.value })
+    onChangeName(e) {
+        this.setState({ name: e.target.value })
     }
-    onChangeLastName(e) {
-        this.setState({ lastname: e.target.value })
-    }
+
     onChangePay(e) {
         this.setState({ pay_amount: e.target.value })
     }
@@ -75,8 +71,7 @@ export default class FormDataComponent extends Component {
         e.preventDefault()
 
         this.setState({
-            firstname: '',
-            lastname: '',
+            name: '',
             title: '',
             pay_amount: '',
             pay_interval: 60,
@@ -97,12 +92,8 @@ export default class FormDataComponent extends Component {
                 <form onSubmit={this.onSubmit} style={{paddingBottom: "20px", display:"inline-block", width: "80%"}}>
                     <div>
                         <div className="form-group">
-                            <label>First Name</label>
-                            <input required type="text" className="form-control" value={this.state.firstname} onChange={this.onChangeFirstName} />
-                        </div>
-                        <div className="form-group">
-                            <label>Last Name</label>
-                            <input type="text" className="form-control" value={this.state.lastname} onChange={this.onChangeLastName} />
+                            <label>Name</label>
+                            <input required type="text" className="form-control" value={this.state.name} onChange={this.onChangeName} />
                         </div>
                         <div className="form-group">
                             <label>Title</label>
